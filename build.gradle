@@ -8,7 +8,7 @@ plugins {
 //TODO - esse valor deve ser o mesmo do seu Docker Hub ID
 group = 'sergiothiagovrb'
 //TODO - aqui é o lugar onde se configura a tag da imagem Docker a ser gerada
-version = '1.1.0'
+version = '1.2.0'
 
 java {
     sourceCompatibility = '17'
