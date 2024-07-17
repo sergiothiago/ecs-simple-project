@@ -13,49 +13,87 @@ import java.util.Optional;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    public ProductController(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @GetMapping
-    public Iterable<Product> getAllProducts() {return productRepository.findAll();}
+    public Iterable<Product> findAll() {
+        return productRepository.findAll();
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@RequestParam Long id) {
-        Optional<Product> productOptional = productRepository.findById(id);
-
-        if(productOptional.isPresent()){
-            return ResponseEntity.ok(productOptional.get());
-        } else{
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Product> findById(@PathVariable long id) {
+        Optional<Product> optProduct = productRepository.findById(id);
+        if (optProduct.isPresent()) {
+            return new ResponseEntity<Product>(optProduct.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product productSaved = productRepository.save(product);
+    public ResponseEntity<Product> saveProduct(
+            @RequestBody Product product) {
+        Product productCreated = productRepository.save(product);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productSaved);
+        return new ResponseEntity<Product>(productCreated,
+                HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity<Product> updateProduct(@RequestBody Product productForUpdate) {
-        Optional<Product> OldProduct = productRepository.findById(productForUpdate.getId());
-        if(OldProduct.isPresent()){
-            Product productUpdated = productRepository.save(productForUpdate);
-            return ResponseEntity.ok(productUpdated);
-        } else{
-            return ResponseEntity.notFound().build();
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @RequestBody Product product, @PathVariable("id") long id) {
+        if (productRepository.existsById(id)) {
+            product.setId(id);
+
+            Product productUpdated = productRepository.save(product);
+
+            return new ResponseEntity<Product>(productUpdated,
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/bycode/{code}")
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
+        Optional<Product> optProduct = productRepository.findById(id);
+        if (optProduct.isPresent()) {
+            Product product = optProduct.get();
+
+            productRepository.delete(product);
+
+            return new ResponseEntity<Product>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(path = "/bycode")
     public ResponseEntity<Product> findByCode(@RequestParam String code) {
-        Optional<Product> productOptional = productRepository.findByCode(code);
-        if(productOptional.isPresent()){
-            return ResponseEntity.ok(productOptional.get());
-        }else{
-            return ResponseEntity.notFound().build();
+        Optional<Product> optProduct = productRepository.findByCode(code);
+        if (optProduct.isPresent()) {
+            return new ResponseEntity<Product>(optProduct.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

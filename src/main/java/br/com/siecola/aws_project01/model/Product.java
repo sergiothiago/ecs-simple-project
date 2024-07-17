@@ -12,9 +12,9 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
-    @Column(length = 33, nullable = false)
+    @Column(length = 32, nullable = false)
     private String name;
 
     @Column(length = 24, nullable = false)
@@ -25,11 +25,14 @@ public class Product {
 
     private float price;
 
-    public Long getId() {
+    @Column(length = 12, nullable = true)
+    private String color;
+
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -63,5 +66,13 @@ public class Product {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
